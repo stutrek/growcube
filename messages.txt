@@ -1,0 +1,104 @@
+general form:
+ele - header
+XXX - command
+
+all messages start with ele
+
+----
+
+app to GC
+
+550 - unknown (ack to watering state update ack)
+
+a43 - ??
+	#1#2#
+
+a44 - set time and date
+	#19#2023@03@21@21@52@25#
+	- ? time zone?
+	- 2023@03@21@21@52@25 is the time
+
+a47 - start/stop manual water
+	#3#2@1# and #3#2@0#
+	- unknown
+	- plant id
+	- 1 for start 0 for stop
+
+a48 - request history for a plant?
+	#1#2#
+	GC responds with a22 and a23
+	- ??
+	- plant id
+
+a49 - change desired water levels
+	#9#2@3@12@63# #9#2@1@5s@12#
+	- ?? (restrict to nighttime?)
+	- plant id
+	- mode
+		3 is smart (lowest setting, highest setting)
+		1 is timer (duration, interval)
+	- arg1
+	- arg2
+
+-----
+
+GC to app
+
+506 - ?? ack? sent after receiving watering state update
+
+a20 - status update / response
+	#1#1#
+	- ?
+	- 0 seems to trigger water status warning, but #1#1# appears after the warning
+
+a21 - data on a plant, comes in batches of four
+	#10#1@53@54@25#
+	- ?
+	- plant id (0-3)
+	- current moisture
+	- ??
+	- ??
+
+a22 - moisture levels for a plant
+	#83#2@2023@3@19@00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,00,28,28,30,30,32#
+	#83#2@2023@3@20@33,33,33,33,33,33,33,33,33,33,33,32,32,31,32,31,33,33,33,33,59,58,58,58#
+	#83#2@2023@3@21@58,58,58,58,58,58,59,59,59,59,59,59,59,58,58,58,58,57,57,57,56,53,52,00#
+	- ??
+	- plant id
+	- Y
+	- M
+	- D
+	- hourly moisture levels
+
+a23 - waterings for plant (appears to only be smart, manual is probably in the app)
+	#17#2@2023@3@19@19@10# up to
+	#17#2@2023@3@19@19@44#
+	- ?? (watering type smart/scheduled?)
+	- plant id
+	- Y
+	- M
+	- D
+	- H
+	- M
+
+a24 - status
+	#11#3.6@2917660#
+	- ??
+	- software version
+	- build?
+
+a26 - ?? sent after starting a manual water on plant 2, same for start and stop.
+	#1#2#
+
+a27 - ?? terminates a data update?
+	#1#2#
+
+a33 - ??
+	#3#0@0#
+
+a35 - terminates moisture levels for plant
+	#3#2@1#
+	- ??
+	- plant id
+	- ??
+
